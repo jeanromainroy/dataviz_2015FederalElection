@@ -82,12 +82,35 @@ function updatePanelBarChart(gBars, gAxis, districtSource, x, y, yAxis, color, p
   // Clear
   gBars.selectAll("rect").remove();
   gBars.selectAll("text").remove();
-  gAxis.selectAll("text").remove();
 
   // Draw Axis
   gAxis.append("g")
     .attr("class", "y axis")
     .call(yAxis);
+
+  gAxis.selectAll("text").remove();
+
+  gAxis.selectAll()
+    .data(districtSource.results)
+    .enter()
+    .append("text")
+    .attr('font-size', '12px')
+    .attr("y", function(d){
+      return y(d.party) + y.bandwidth()/2 + 5;
+    })
+    .attr("x",-30)
+    .text(function(d1){
+      var rightParty = parties.filter(function(d2){
+        return d2.name === d1.party;
+      });
+
+      if(rightParty[0] != null){
+        return rightParty[0].abbreviation;
+      }else{
+        return "Autre";
+      }
+    });
+
 
   // Draw Bar
   gBars.selectAll()
@@ -105,6 +128,7 @@ function updatePanelBarChart(gBars, gAxis, districtSource, x, y, yAxis, color, p
     .attr("fill", function(d) {
       return color(d.party);
     });
+
   
   // Draw percentages
   gBars.selectAll()
@@ -113,7 +137,7 @@ function updatePanelBarChart(gBars, gAxis, districtSource, x, y, yAxis, color, p
     .append("text")
     .attr('font-size', '12px')
     .attr("y", function(d){
-      return y(d.party) + y.bandwidth()/2 + 6;
+      return y(d.party) + y.bandwidth()/2 + 5;
     })
     .attr("x", function(d) {
       return x(d.votes) + 4;
